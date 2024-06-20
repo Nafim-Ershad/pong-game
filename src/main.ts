@@ -7,8 +7,12 @@ import {Ball, Paddle} from "./ObjectClasses";
 const canvas = document.querySelector("#game") as HTMLCanvasElement;
 const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
+const startButton = document.querySelector(".start") as HTMLDivElement;
+const levelContainer = document.querySelector('#level') as HTMLDivElement;
+
 // Keyboard Key Presses
 const keyPressed: boolean[] = [];
+let level = 1;
 
 canvas.width = window.screen.width;
 canvas.height = window.screen.height - 100;
@@ -44,9 +48,17 @@ function scoreIncrease(): void{
     player1.score += 1;
     (document.querySelector("#player1score") as HTMLHeadingElement).innerText = `${player1.score}`;
     respawnBall(canvas, ball);
+
+    if(player1.score != 0 && player1.score % 5 === 0){
+      level += 1;
+      levelContainer.innerText = `Level ${level}`;
+    }
   }
 }
 
+
+
+// Collision Calculations
 function paddleCollisionWithEdges(paddle: Paddle): void{
   if(paddle.position.y <= 0){
     paddle.position.y = 0;
@@ -66,7 +78,6 @@ function ballAndPaddleCollision(ball: Ball, paddle: Paddle): void{
 }
 
 window.addEventListener('keydown', function(e: KeyboardEvent){
-  console.log(e);
   keyPressed[e.keyCode] = true;
 });
 
@@ -125,6 +136,10 @@ function gameUpdate(): void{
 }
 
 function gameDraw(): void{
+  
+  ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   ball.draw();
   player1.draw();
   player2.draw();
@@ -135,8 +150,8 @@ function gameLoop(): void{
 
   drawGameScene();
   
-  ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+  // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   window.requestAnimationFrame(gameLoop);
 
@@ -145,4 +160,11 @@ function gameLoop(): void{
 
 }
 
-gameLoop();
+drawGameScene();
+gameDraw();
+
+startButton.addEventListener('click', function(): void{
+
+  startButton.classList.add('hidden');
+  gameLoop();
+});
